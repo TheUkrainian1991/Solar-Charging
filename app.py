@@ -12,7 +12,7 @@ st.markdown("Find the solar energy forecast for your area\
              on [VisualCrossing](https://www.visualcrossing.com/weather/weather-data-services).\
              Making an account is free if the page is restricted.")
 st.markdown("My prediction is based on a 10.12KWh battery and over a year of data entry.\
-            The graph below indicated what the model is based on. My median daily usage is 21.6")
+            The graph below indicates what the model is based on. My median daily usage is 21.6KWh")
 
 df = pd.read_csv("solar_data.csv")
 fig = px.scatter(df, x="solar_energy", y="charge_to", labels={
