@@ -32,6 +32,7 @@ fig = px.line(next_five_days, x="date", y=next_five_days.columns, labels={
                      "value": "Charge to (%) / Solar Energy"
                  })
 st.plotly_chart(fig)
+st.markdown(f"### Charge to :green[{next_five_days.iloc[1,2]}%] tonight | 95% prediction range: ({next_five_days.iloc[1,3]}-{next_five_days.iloc[1,4]}%)")
 
 
 col1, col2 = st.columns(2)
