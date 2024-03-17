@@ -7,6 +7,9 @@ import requests
 import json
 import os
 
+with open('model_params.json', 'r') as file:
+    model_params = json.load(file)
+
 YOUR_API_KEY = os.environ['VISUALCROSSING']
 LOCATION = os.environ['LOCATION']
 
@@ -31,19 +34,20 @@ def retrieve_data(date):
         return 0
 
 @st.cache_data
-def calc_prediction(solar_energy):
+def calc_prediction(solar_energy, model_param_sub):
     # The following are weights from analysis in the notebook
-    t = 1.964887640611612
-    std_error = 12.260422682230273
-    x_mean = 7.664998453608248
-    n = 485
-    denominator = 20735.016186046512
+    t = model_param_sub['t']
+    std_error = model_param_sub['std_error']
+    x_mean = model_param_sub['x_mean']
+    n = model_param_sub['n']
+    denominator = model_param_sub['denominator']
 
     # Calcs
     predict_interval = t * std_error * (1 + 1/n + (solar_energy - x_mean)**2 / denominator)**.5
 
-    battery_charge = (-0.001359*((solar_energy)**4)) + (0.08954*((solar_energy)**3)) - (1.781*((solar_energy)**2))\
-    + (6.279*((solar_energy)**1)) + 95.53
+    battery_charge = (model_param_sub['x4']*((solar_energy)**4)) + (model_param_sub['x3']*((solar_energy)**3))\
+          + (model_param_sub['x2']*((solar_energy)**2))\
+    + (model_param_sub['x']*((solar_energy)**1)) + model_param_sub['c']
 
 
     if battery_charge > 100:
@@ -68,7 +72,10 @@ def make_next_five_days_df():
     for num in range(5):
         date = dt.date.today() + dt.timedelta(days=num)
         solar_energy = retrieve_data(date)
-        battery_bounded, low_95, high_95 = calc_prediction(solar_energy)
+        if date.month >= 10 or date.month <= 3:
+            battery_bounded, low_95, high_95 = calc_prediction(solar_energy, model_params['GMT'])
+        else:
+            battery_bounded, low_95, high_95 = calc_prediction(solar_energy, model_params['DST'])
 
         date_list.append(date)
         solar_energy_list.append(solar_energy)

@@ -26,6 +26,8 @@ st.plotly_chart(fig)
 
 # Prediction Graph
 st.markdown("## Next Five Days")
+st.markdown("This prediction is generated via two models. The former model is trained on GMT\
+             dates and the latter on DST. This is automatic.")
 next_five_days = make_next_five_days_df()
 fig = px.line(next_five_days, x="date", y=next_five_days.columns, labels={
                      "date": "Date",
